@@ -49,8 +49,7 @@ object ParallelCountChange {
     if (money == 0) 1
     else if (money < 0) 0
     else coins match {
-      case c :: others if (c <= money) => countChange(money - c, coins) + countChange(money, others)
-      case c :: others => countChange(money, others)
+      case c :: others => countChange(money - c, coins) + countChange(money, others)
       case Nil => 0
     }
   }
