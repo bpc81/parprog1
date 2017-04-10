@@ -60,11 +60,15 @@ class KMeans {
   }
 
   def update(classified: GenMap[Point, GenSeq[Point]], oldMeans: GenSeq[Point]): GenSeq[Point] = {
-    ???
+    oldMeans.map( p => findAverage(p, classified(p)) )
   }
 
   def converged(eta: Double)(oldMeans: GenSeq[Point], newMeans: GenSeq[Point]): Boolean = {
-    ???
+    val pairs: GenSeq[(Point,Point)] = oldMeans zip newMeans
+    //def isClose((p1: Point, p2: Point)): Boolean = (p1.squareDistance(p2) <= eta)
+    val isClose = (p1: Point, p2: Point) => p1.squareDistance(p2) <= eta
+    pairs.forall( isClose.tupled )
+//    oldMeans.zip(newMeans).forall( (p1: Point, p2: Point) => p1.squareDistance(p2) <= eta )
   }
 
   @tailrec
