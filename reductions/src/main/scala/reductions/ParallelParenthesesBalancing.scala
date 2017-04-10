@@ -4,6 +4,8 @@ import scala.annotation._
 import org.scalameter._
 import common._
 
+import scala.util.{Try, Failure, Success}
+
 object ParallelParenthesesBalancingRunner {
 
   @volatile var seqResult = false
@@ -41,13 +43,14 @@ object ParallelParenthesesBalancing {
   /** Returns `true` iff the parentheses in the input `chars` are balanced.
    */
   def balance(chars: Array[Char]): Boolean = {
-    def balanceRec(chars: Array[Char], depth: Int): Boolean = chars.headOption match {
-      case None => depth == 0
-      case Some('(') => balanceRec(chars.tail, depth+1)
-      case Some(')') => if (depth > 0) balanceRec(chars.tail, depth-1) else false
-      case Some(_) => balanceRec(chars.tail,depth)
+    def balanceRec(idx: Int, depth: Int): Boolean = Try(chars(idx)) match {
+      case Success('(') => balanceRec(idx+1, depth+1)
+      case Success(')') => if (depth > 0) balanceRec(idx+1, depth-1) else false
+      case Success(_) => balanceRec(idx+1, depth)
+      case Failure(_) => depth == 0
     }
-    balanceRec(chars,0)
+
+    balanceRec(0,0)
   }
 
   /** Returns `true` iff the parentheses in the input `chars` are balanced.
@@ -55,23 +58,25 @@ object ParallelParenthesesBalancing {
   def parBalance(chars: Array[Char], threshold: Int): Boolean = {
 
     def traverse(idx: Int, until: Int, netDepth: Int, minDepth: Int): (Int, Int) = {
-      if (idx == until) (netDepth, minDepth)
-      else chars(idx) match {
+//      if (idx == until) (netDepth, minDepth)
+      if (idx < until) chars(idx) match {
         case '(' => traverse(idx + 1, until, netDepth + 1, minDepth)
         case ')' => traverse(idx + 1, until, netDepth - 1, minDepth.min(netDepth - 1))
         case _ => traverse(idx + 1, until, netDepth, minDepth)
       }
+      else (netDepth, minDepth)
     }
 
 
     def reduce(from: Int, until: Int): (Int, Int) = {
-      if (until - from <= threshold) traverse(from, until, 0, 0)
-      else {
+//      if (until - from <= threshold) traverse(from, until, 0, 0)
+      if (until - from > threshold) {
         val center = (until + from) / 2
         val ((netLeft, minLeft), (netRight, minRight)) =
           parallel(reduce(from, center), reduce(center, until))
         (netLeft + netRight, minLeft.min(netLeft + minRight))
       }
+      else traverse(from, until, 0, 0)
     }
 
     reduce(0, chars.length) == (0, 0)
