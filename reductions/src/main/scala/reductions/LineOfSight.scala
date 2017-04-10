@@ -56,7 +56,7 @@ object LineOfSight {
   /** Traverses the specified part of the array and returns the maximum angle.
    */
   def upsweepSequential(input: Array[Float], from: Int, until: Int): Float = {
-    ???
+    return (from until until).map(idx => input(idx)/idx).max
   }
 
   /** Traverses the part of the array starting at `from` and until `end`, and
@@ -68,9 +68,14 @@ object LineOfSight {
    *  work is divided and done recursively in parallel.
    */
   def upsweep(input: Array[Float], from: Int, end: Int,
-    threshold: Int): Tree = {
-    ???
-  }
+    threshold: Int): Tree = if (end - from > threshold) {
+    val center = (from + end) / 2
+    val (left, right) = parallel(
+      upsweep(input, from, center, threshold),
+      upsweep(input, center, end, threshold)
+    )
+    Node(left, right)
+  } else Leaf(from, end, upsweepSequential(input,from,end))
 
   /** Traverses the part of the `input` array starting at `from` and until
    *  `until`, and computes the maximum angle for each entry of the output array,
