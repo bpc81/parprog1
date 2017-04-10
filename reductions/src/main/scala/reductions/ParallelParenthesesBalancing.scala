@@ -41,7 +41,13 @@ object ParallelParenthesesBalancing {
   /** Returns `true` iff the parentheses in the input `chars` are balanced.
    */
   def balance(chars: Array[Char]): Boolean = {
-    ???
+    def balanceRec(chars: Array[Char], depth: Int): Boolean = chars.headOption match {
+      case None => depth == 0
+      case Some('(') => balanceRec(chars.tail, depth+1)
+      case Some(')') => if (depth > 0) balanceRec(chars.tail, depth-1) else false
+      case Some(_) => balanceRec(chars.tail,depth)
+    }
+    balanceRec(chars,0)
   }
 
   /** Returns `true` iff the parentheses in the input `chars` are balanced.
