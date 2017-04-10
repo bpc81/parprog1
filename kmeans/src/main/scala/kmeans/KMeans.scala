@@ -64,11 +64,8 @@ class KMeans {
   }
 
   def converged(eta: Double)(oldMeans: GenSeq[Point], newMeans: GenSeq[Point]): Boolean = {
-    val pairs: GenSeq[(Point,Point)] = oldMeans zip newMeans
-    //def isClose((p1: Point, p2: Point)): Boolean = (p1.squareDistance(p2) <= eta)
     val isClose = (p1: Point, p2: Point) => p1.squareDistance(p2) <= eta
-    pairs.forall( isClose.tupled )
-//    oldMeans.zip(newMeans).forall( (p1: Point, p2: Point) => p1.squareDistance(p2) <= eta )
+    (oldMeans zip newMeans).forall( isClose.tupled )
   }
 
   @tailrec
