@@ -58,16 +58,13 @@ object VerticalBoxBlur {
    */
   def parBlur(src: Img, dst: Img, numTasks: Int, radius: Int): Unit = {
     // TODO implement using the `task` construct and the `blur` method
-    val splitPoints = ((0 until src.width)
-      by (src.width / numTasks) toList
-      ) :+ src.width
-//    val splitPointsTerminated =
-//      if (splitPoints.last == src.width-1) splitPoints :+ (src.width - 1)
-//      else splitPoints
-    val tasks = for( List(from, end) <- splitPoints.sliding(2)
-      ) yield task { blur(src, dst, from, end, radius) }
-    tasks foreach (_.join())
+    val taskSize = src.width / numTasks
+    val splitPoints = (0 until src.width by taskSize).toList :+ src.width
 
+    val tasks = splitPoints.sliding(2).toList.map {
+      case List(from,end) => task {blur(src,dst,from,end,radius)} }
+
+    tasks foreach (_.join())
   }
 
 }
