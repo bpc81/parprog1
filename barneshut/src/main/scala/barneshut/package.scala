@@ -44,33 +44,51 @@ package object barneshut {
   }
 
   case class Empty(centerX: Float, centerY: Float, size: Float) extends Quad {
-    def massX: Float = ???
-    def massY: Float = ???
-    def mass: Float = ???
-    def total: Int = ???
-    def insert(b: Body): Quad = ???
+    def massX: Float = centerX
+    def massY: Float = centerY
+    def mass: Float = 0f
+    def total: Int = 0
+    def insert(b: Body): Quad = Leaf(centerX, centerY, size, Seq(b))
   }
 
   case class Fork(
     nw: Quad, ne: Quad, sw: Quad, se: Quad
   ) extends Quad {
-    val centerX: Float = ???
-    val centerY: Float = ???
-    val size: Float = ???
-    val mass: Float = ???
-    val massX: Float = ???
-    val massY: Float = ???
-    val total: Int = ???
+    val centerX: Float = nw.centerX + 0.5f*nw.size
+    val centerY: Float = nw.centerY + 0.5f*nw.size
+    val size: Float = nw.size * 2
+    val mass: Float = nw.mass + ne.mass + sw.mass + se.mass
+    val massX: Float = (
+      nw.massX*nw.mass +
+      ne.massX*ne.mass +
+      sw.massX*sw.mass +
+      se.massX*se.mass
+      ) / mass
+    val massY: Float = (
+      nw.massY*nw.mass +
+      ne.massY*ne.mass +
+      sw.massY*sw.mass +
+      se.massY*se.mass
+    ) / mass
+    val total: Int = nw.total + ne.total + sw.total + se.total
 
     def insert(b: Body): Fork = {
-      ???
+      assert( math.abs(b.x - centerX) <= 0.5*size )
+      assert( math.abs(b.y - centerY) <= 0.5*size )
+      if (b.x < centerX) {
+        if (b.y < centerY) Fork(nw.insert(b), ne, sw, se)
+        else Fork(nw, se.insert(b), sw, se)
+      } else {
+        if (b.y < centerY) Fork(nw, ne, sw.insert(b), se)
+        else Fork(nw, ne, sw, se.insert(b))
+      }
     }
   }
 
   case class Leaf(centerX: Float, centerY: Float, size: Float, bodies: Seq[Body])
   extends Quad {
     val (mass, massX, massY) = (??? : Float, ??? : Float, ??? : Float)
-    val total: Int = ???
+    val total: Int = bodies.length
     def insert(b: Body): Quad = ???
   }
 
