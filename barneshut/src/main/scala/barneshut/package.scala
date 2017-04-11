@@ -75,11 +75,11 @@ package object barneshut {
     def insert(b: Body): Fork = {
       assert( math.abs(b.x - centerX) <= 0.5*size )
       assert( math.abs(b.y - centerY) <= 0.5*size )
-      if (b.x < centerX) {
-        if (b.y < centerY) Fork(nw.insert(b), ne, sw, se)
-        else Fork(nw, se.insert(b), sw, se)
+      if (b.y < centerY) {
+        if (b.x < centerX) Fork(nw.insert(b), ne, sw, se)
+        else Fork(nw, ne.insert(b), sw, se)
       } else {
-        if (b.y < centerY) Fork(nw, ne, sw.insert(b), se)
+        if (b.x < centerX) Fork(nw, ne, sw.insert(b), se)
         else Fork(nw, ne, sw, se.insert(b))
       }
     }
