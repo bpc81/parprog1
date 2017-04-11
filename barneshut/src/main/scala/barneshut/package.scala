@@ -147,13 +147,18 @@ package object barneshut {
       }
 
       def traverse(quad: Quad): Unit = (quad: Quad) match {
-        case Empty(_, _, _) =>
+        case Empty(_, _, _) => Unit
           // no force
-        case Leaf(_, _, _, bodies) =>
+        case Leaf(_, _, _, bodies) => bodies foreach (b => addForce(b.mass, b.x, b.y))
           // add force contribution of each body by calling addForce
         case Fork(nw, ne, sw, se) =>
           // see if node is far enough from the body,
           // or recursion is needed
+          if (quad.size / distance(x,y,quad.massX,quad.massY) < theta) {
+            // close range => recursion
+            traverse(nw); traverse(ne); traverse(nw); traverse(se)
+          } else // long range => replace quad with point mass
+          addForce(quad.mass, quad.massX, quad.massY)
       }
 
       traverse(quad)
