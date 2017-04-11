@@ -180,9 +180,9 @@ package object barneshut {
 
     def +=(b: Body): SectorMatrix = {
       val xSector = math.floor((b.x - boundaries.minX) / sectorSize).toInt
-      val x = 0.max(xSector).min(sectorPrecision)
+      val x = 0.max(xSector).min(sectorPrecision - 1)
       val ySector = math.floor((b.y - boundaries.minY) / sectorSize).toInt
-      val y = 0.max(ySector).min(sectorPrecision)
+      val y = 0.max(ySector).min(sectorPrecision - 1)
       apply(x,y) += b
       this
     }
