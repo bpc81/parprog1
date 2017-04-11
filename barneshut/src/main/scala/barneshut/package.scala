@@ -73,8 +73,8 @@ package object barneshut {
     val total: Int = nw.total + ne.total + sw.total + se.total
 
     def insert(b: Body): Fork = {
-      assert( math.abs(b.x - centerX) <= 0.5*size )
-      assert( math.abs(b.y - centerY) <= 0.5*size )
+      //assert( math.abs(b.x - centerX) <= 0.5*size )
+      //assert( math.abs(b.y - centerY) <= 0.5*size )
       if (b.y < centerY) {
         if (b.x < centerX) Fork(nw.insert(b), ne, sw, se)
         else Fork(nw, ne.insert(b), sw, se)
@@ -179,7 +179,11 @@ package object barneshut {
     for (i <- 0 until matrix.length) matrix(i) = new ConcBuffer
 
     def +=(b: Body): SectorMatrix = {
-      ???
+      val xSector = math.floor((b.x - boundaries.minX) / sectorSize).toInt
+      val x = 0.max(xSector).min(sectorPrecision)
+      val ySector = math.floor((b.y - boundaries.minY) / sectorSize).toInt
+      val y = 0.max(ySector).min(sectorPrecision)
+      apply(x,y) += b
       this
     }
 
