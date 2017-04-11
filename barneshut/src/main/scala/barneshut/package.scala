@@ -208,7 +208,7 @@ package object barneshut {
           val sectorSize = boundaries.size / sectorPrecision
           val centerX = boundaries.minX + x * sectorSize + sectorSize / 2
           val centerY = boundaries.minY + y * sectorSize + sectorSize / 2
-          var emptyQuad: Quad = Empty(centerX, centerY, sectorSize)
+          val emptyQuad: Quad = Empty(centerX, centerY, sectorSize)
           val sectorBodies = this(x, y)
           sectorBodies.foldLeft(emptyQuad)(_ insert _)
         } else {
