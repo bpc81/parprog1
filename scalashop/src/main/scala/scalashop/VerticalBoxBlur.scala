@@ -58,7 +58,7 @@ object VerticalBoxBlur {
    */
   def parBlur(src: Img, dst: Img, numTasks: Int, radius: Int): Unit = {
     // TODO implement using the `task` construct and the `blur` method
-    val taskSize = src.width / numTasks
+    val taskSize = math.max(1, src.width / numTasks)
     val splitPoints = (0 until src.width by taskSize).toList :+ src.width
 
     val tasks = splitPoints.sliding(2).toList.map {

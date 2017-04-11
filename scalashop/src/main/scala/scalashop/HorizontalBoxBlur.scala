@@ -57,7 +57,7 @@ object HorizontalBoxBlur {
    */
   def parBlur(src: Img, dst: Img, numTasks: Int, radius: Int): Unit = {
   // TODO implement using the `task` construct and the `blur` method
-    val taskSize = src.height / numTasks
+    val taskSize = math.max(1, src.height / numTasks)
     val splitPoints = (0 until src.height by taskSize).toList :+ src.height
     val tasks = splitPoints.sliding(2).toList map {
       case List(from,end) => task { blur(src,dst,from,end,radius) }
