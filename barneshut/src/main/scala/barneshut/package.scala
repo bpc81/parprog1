@@ -190,7 +190,15 @@ package object barneshut {
     def apply(x: Int, y: Int) = matrix(y * sectorPrecision + x)
 
     def combine(that: SectorMatrix): SectorMatrix = {
-      ???
+      assert(this.sectorPrecision == that.sectorPrecision)
+      assert(this.sectorSize == that.sectorSize)
+      assert(this.boundaries.minX == that.boundaries.minX)
+      assert(this.boundaries.minY == that.boundaries.minY)
+
+      for(i <- 0 until sectorPrecision*sectorPrecision) {
+        matrix(i) = matrix(i).combine(that.matrix(i))
+      }
+      this
     }
 
     def toQuad(parallelism: Int): Quad = {
