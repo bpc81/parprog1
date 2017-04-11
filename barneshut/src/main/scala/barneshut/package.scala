@@ -58,13 +58,13 @@ package object barneshut {
     val centerY: Float = nw.centerY + 0.5f*nw.size
     val size: Float = nw.size * 2
     val mass: Float = nw.mass + ne.mass + sw.mass + se.mass
-    val massX: Float = (
+    val massX: Float = if (mass == 0) centerX else (
       nw.massX*nw.mass +
       ne.massX*ne.mass +
       sw.massX*sw.mass +
       se.massX*se.mass
       ) / mass
-    val massY: Float = (
+    val massY: Float = if (mass == 0) centerY else (
       nw.massY*nw.mass +
       ne.massY*ne.mass +
       sw.massY*sw.mass +
@@ -99,7 +99,7 @@ package object barneshut {
       val sw = Empty(centerX - newRadius, centerY + newRadius, newSize)
       val se = Empty(centerX + newRadius, centerY + newRadius, newSize)
       bodies.foldLeft(Fork(nw,ne,sw,se) insert b) ( _ insert _ )
-    } else Leaf(centerX, centerY, size, bodies :+ b)
+    } else Leaf(centerX, centerY, size, b +: bodies )
   }
 
   def minimumSize = 0.00001f
