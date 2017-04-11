@@ -87,9 +87,19 @@ package object barneshut {
 
   case class Leaf(centerX: Float, centerY: Float, size: Float, bodies: Seq[Body])
   extends Quad {
-    val (mass, massX, massY) = (??? : Float, ??? : Float, ??? : Float)
+    val mass: Float = bodies.foldLeft(0f)( (m,b) => m + b.mass)
+    val massX: Float = bodies.foldLeft(0f)( (m,b) => m + b.mass*b.x) / mass
+    val massY: Float = bodies.foldLeft(0f)( (m,b) => m + b.mass*b.y) / mass
     val total: Int = bodies.length
-    def insert(b: Body): Quad = ???
+    def insert(b: Body): Quad = if (size >= minimumSize) {
+      val newSize = size / 2
+      val newRadius = newSize / 2
+      val nw = Empty(centerX - newRadius, centerY - newRadius, newSize)
+      val ne = Empty(centerX + newRadius, centerY - newRadius, newSize)
+      val sw = Empty(centerX - newRadius, centerY + newRadius, newSize)
+      val se = Empty(centerX + newRadius, centerY + newRadius, newSize)
+      (bodies :+ b).foldLeft[Fork](Fork(nw,ne,sw,se)) ( (f: Fork, b: Body) => f.insert(b) )
+    } else Leaf(centerX, centerY, size, bodies :+ b)
   }
 
   def minimumSize = 0.00001f
