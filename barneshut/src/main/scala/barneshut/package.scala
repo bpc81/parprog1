@@ -98,7 +98,7 @@ package object barneshut {
       val ne = Empty(centerX + newRadius, centerY - newRadius, newSize)
       val sw = Empty(centerX - newRadius, centerY + newRadius, newSize)
       val se = Empty(centerX + newRadius, centerY + newRadius, newSize)
-      (bodies :+ b).foldLeft[Fork](Fork(nw,ne,sw,se)) ( (f: Fork, b: Body) => f.insert(b) )
+      bodies.foldLeft(Fork(nw,ne,sw,se).insert(b)) ( (f: Fork, b: Body) => f.insert(b) )
     } else Leaf(centerX, centerY, size, bodies :+ b)
   }
 
